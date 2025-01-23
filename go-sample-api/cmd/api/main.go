@@ -26,7 +26,7 @@ func main() {
 	// read form command line args
 
 	// connect database
-	dsn := flag.String("dsn", "host=localhost user=postgres dbname=gosampledb password=postgres port=5432 sslmode=disable timezone=UTC connect_timeout=5", "database connection string")
+	dsn := flag.String("dsn", "host=localhost user=postgres dbname=gosampledb password=123456 port=5432 sslmode=disable timezone=UTC connect_timeout=5", "database connection string")
 	flag.Parse()
 	app.DSN = *dsn
 
@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 	app.DB = conn
-
+	defer conn.Close()
 	// start server
 	// http.HandleFunc("/", Hello)
 	// http.HandleFunc("/about", About)

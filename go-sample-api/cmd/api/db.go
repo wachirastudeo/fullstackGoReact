@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"log"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func openDB(dsn string) (*sql.DB, error) {
