@@ -1,7 +1,8 @@
 package main
 
 import (
-	"database/sql"
+	"backend/internal/repository"
+	"backend/internal/repository/dbrepo"
 	"flag"
 	"fmt"
 	"log"
@@ -14,7 +15,7 @@ const port = 8080
 type application struct {
 	DSN    string //database connection string
 	Domain string //domain name
-	DB     *sql.DB
+	DB     repository.DatabaseRepo
 }
 
 func main() {
@@ -25,18 +26,21 @@ func main() {
 
 	// read form command line args
 
-	// connect database
+	// set database
 	dsn := flag.String("dsn", "host=localhost user=postgres dbname=gosampledb password=123456 port=5432 sslmode=disable timezone=UTC connect_timeout=5", "database connection string")
 	flag.Parse()
 	app.DSN = *dsn
-
+	// connect to database
 	conn, err := app.connectDB()
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	app.DB = conn
-	defer conn.Close()
+	// connect by interface
+	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
+
+	defer app.DB.Connection().Close()
+
 	// start server
 	// http.HandleFunc("/", Hello)
 	// http.HandleFunc("/about", About)
