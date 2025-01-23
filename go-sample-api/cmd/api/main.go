@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,7 +12,9 @@ const port = 8080
 
 // create structs for application config
 type application struct {
-	Domain string
+	DSN    string //database connection string
+	Domain string //domain name
+	DB     *sql.DB
 }
 
 func main() {
@@ -22,6 +26,16 @@ func main() {
 	// read form command line args
 
 	// connect database
+	dsn := flag.String("dsn", "host=localhost user=postgres dbname=gosampledb password=postgres port=5432 sslmode=disable timezone=UTC connect_timeout=5", "database connection string")
+	flag.Parse()
+	app.DSN = *dsn
+
+	conn, err := app.connectDB()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.DB = conn
 
 	// start server
 	// http.HandleFunc("/", Hello)
@@ -29,7 +43,7 @@ func main() {
 
 	log.Printf("Starting server on port %d", port)
 
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())
+	err = http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())
 
 	if err != nil {
 		log.Fatal(err)
