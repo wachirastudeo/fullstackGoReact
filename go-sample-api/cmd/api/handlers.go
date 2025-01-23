@@ -21,21 +21,32 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		Message: "Go went Gone",
 		Version: "1.0.0",
 	}
-	out, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Print(err)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	// out, err := json.Marshal(payload)
+	// if err != nil {
+	// 	fmt.Print(err)
+	// }
 
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(out)
+	_ = app.writeJSON(w, http.StatusOK, payload)
+
+}
+func (app *application) AllMovie(w http.ResponseWriter, r *http.Request) {
+	movie, err := app.DB.AllMovies()
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+	_ = app.writeJSON(w, http.StatusOK, movie)
 }
 func (app *application) About(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "About")
 }
 
-func (app *application) AllMovie(w http.ResponseWriter, r *http.Request) {
+// Mockup data
+func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 
 	rd, _ := time.Parse("2006-01-02", "2022-01-01")
 	var movie []models.Movie
