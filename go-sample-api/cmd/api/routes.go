@@ -14,6 +14,7 @@ func (app *application) routes() http.Handler {
 	//register routes
 	r.Get("/", app.Home)
 	r.Get("/about", app.About)
+	r.Get("/allmovie", app.AllMovie)
 
 	return r
 }
