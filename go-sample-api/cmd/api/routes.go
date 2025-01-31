@@ -18,6 +18,7 @@ func (app *application) routes() http.Handler {
 	r.Get("/about", app.About)
 	r.Get("/allmovie", app.AllMovie)
 	r.Get("/allmoviedemo", app.AllMoviedemo)
+	r.Post("/authenticate", app.authenticate)
 
 	return r
 }

@@ -7,15 +7,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 const port = 8080
 
 // create structs for application config
 type application struct {
-	DSN    string //database connection string
-	Domain string //domain name
-	DB     repository.DatabaseRepo
+	DSN          string //database connection string
+	Domain       string //domain name
+	DB           repository.DatabaseRepo
+	auth         Auth
+	JWTSecret    string
+	JWTIssuer    string
+	JWTAudience  string
+	CookieDomain string
+	APIKey       string
 }
 
 func main() {
@@ -44,7 +51,16 @@ func main() {
 	// start server
 	// http.HandleFunc("/", Hello)
 	// http.HandleFunc("/about", About)
-
+	app.auth = Auth{
+		Issuer:        app.JWTIssuer,
+		Audience:      app.JWTAudience,
+		Secret:        app.JWTSecret,
+		TokenExpiry:   time.Minute * 15,
+		RefreshExpiry: time.Hour * 24,
+		CookiePath:    "/",
+		CookieName:    "__Host-refresh_token",
+		CookieDomain:  app.CookieDomain,
+	}
 	log.Printf("Starting server on port %d", port)
 
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())

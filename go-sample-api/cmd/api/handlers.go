@@ -83,3 +83,24 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 
 }
+
+func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
+	//read json payload (อ่านข้อมูลจาก json ที่ส่งมา)
+	// varidate user against database (ตรวจสอบข้อมูลผู้ใช้งาน)
+	// 	check password against hash  (ตรวจสอบรหัสผ่าน)
+
+	// create a jwt user (สร้าง jwt user)
+
+	u := jwtUser{
+		ID:        1,
+		FirstName: "john",
+		LastName:  "doe",
+	}
+	//generate a token (สร้างโทเคน)
+	tokens, err := app.auth.GenerateTokenPair(&u)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+	_ = app.writeJSON(w, http.StatusOK, tokens)
+}
