@@ -102,5 +102,6 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		_ = app.errorJSON(w, err)
 		return
 	}
+
 	_ = app.writeJSON(w, http.StatusOK, tokens)
 }
