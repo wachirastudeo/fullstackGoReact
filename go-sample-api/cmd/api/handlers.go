@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -99,7 +98,6 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// varidate user against database (ตรวจสอบข้อมูลผู้ใช้งาน)
 	user, err := app.DB.GetUserByEmail(requestPayload.Email)
-	log.Printf("errr %s", err)
 
 	if err != nil {
 
