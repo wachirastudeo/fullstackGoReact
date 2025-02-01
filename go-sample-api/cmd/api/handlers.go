@@ -104,9 +104,17 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check password (ตรวจสอบรหัสผ่าน)
-
 	// 	check password against hash  (ตรวจสอบรหัสผ่าน)
+
+	password, err := user.PasswordMatches(requestPayload.Password)
+	if err != nil {
+		app.errorJSON(w, errors.New("invalid password"), http.StatusBadRequest)
+		return
+	}
+	if !password {
+		app.errorJSON(w, errors.New("invalid password"), http.StatusBadRequest)
+		return
+	}
 
 	// create a jwt user (สร้าง jwt user)
 
