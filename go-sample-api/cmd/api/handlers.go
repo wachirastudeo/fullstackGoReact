@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/models"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -86,7 +87,25 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	//read json payload (อ่านข้อมูลจาก json ที่ส่งมา)
+	var requestPayload struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	err := app.readJSON(w, r, &requestPayload)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusBadRequest)
+	}
+
 	// varidate user against database (ตรวจสอบข้อมูลผู้ใช้งาน)
+	user, err := app.DB.GetUserByEmail(requestPayload.Email)
+
+	if err != nil {
+		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
+		return
+	}
+
+	// check password (ตรวจสอบรหัสผ่าน)
+
 	// 	check password against hash  (ตรวจสอบรหัสผ่าน)
 
 	// create a jwt user (สร้าง jwt user)

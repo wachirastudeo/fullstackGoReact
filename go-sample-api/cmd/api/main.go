@@ -61,6 +61,7 @@ func main() {
 		CookieName:    "__Host-refresh_token",
 		CookieDomain:  app.CookieDomain,
 	}
+
 	log.Printf("Starting server on port %d", port)
 
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())

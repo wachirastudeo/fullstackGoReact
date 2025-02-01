@@ -57,3 +57,29 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 	}
 	return movies, nil
 }
+
+// สร้างฟังชั่นค้นหา user จาก email
+
+func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `select id,email,password,firstname,lastname,createdat,updatedat from users where email = $1`
+	// prepare statement sql injection
+
+	var user models.User
+	row := m.DB.QueryRowContext(ctx, query, email)
+	err := row.Scan(
+		&user.ID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+
+}
