@@ -63,7 +63,7 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	query := `select id,email,password,firstname,lastname,createdat,updatedat from users where email = $1`
+	query := `select id,email,password,first_name,last_name,created_at,updated_at from users where email = $1`
 	// prepare statement sql injection
 
 	var user models.User

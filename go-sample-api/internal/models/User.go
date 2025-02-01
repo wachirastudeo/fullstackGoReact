@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,17 +17,19 @@ type User struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-// ตรวจสอบ password
+// PasswordMatches ฟังก์ชันสำหรับตรวจสอบรหัสผ่าน
 func (u *User) PasswordMatches(plainText string) (bool, error) {
+
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
 		switch {
-		case err == bcrypt.ErrMismatchedHashAndPassword:
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
 			// invalid password
 			return false, nil
 		default:
 			return false, err
 		}
 	}
+
 	return true, nil
 }
