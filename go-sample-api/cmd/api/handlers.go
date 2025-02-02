@@ -44,6 +44,7 @@ func (app *application) AllMovie(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = app.writeJSON(w, http.StatusOK, movie)
 }
+
 func (app *application) About(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "About")
@@ -85,6 +86,9 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)
+
+}
+func (app *application) OneMovie(w http.ResponseWriter, r *http.Request) {
 
 }
 
