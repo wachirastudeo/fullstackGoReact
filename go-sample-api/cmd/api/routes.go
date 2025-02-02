@@ -21,6 +21,13 @@ func (app *application) routes() http.Handler {
 	r.Post("/authenticate", app.authenticate)
 	r.Get("/refresh", app.refreshToken)
 	r.Get("/logout", app.logout)
+	r.Get("/movie/{id}", app.GetMovie)
+
+	//group admin
+	r.Route("/admin", func(r chi.Router) {
+		r.Get("/movie/{id}", app.MovieEdit)
+
+	})
 
 	return r
 }

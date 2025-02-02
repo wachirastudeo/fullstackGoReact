@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -63,8 +64,8 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 		Runtime:     200,
 		MPAARating:  "PG-13",
 		Description: "some description",
-		Image:       "some image", Created_at: time.Now(),
-		Updated_at: time.Now(),
+		Image:       "some image", CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	movie = append(movie, handler)
 	rotla := models.Movie{
@@ -74,8 +75,8 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 		Runtime:     100,
 		MPAARating:  "PG-13",
 		Description: "some description rotla",
-		Image:       "some image", Created_at: time.Now(),
-		Updated_at: time.Now(),
+		Image:       "some image", CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	movie = append(movie, rotla)
 
@@ -88,7 +89,48 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 
 }
-func (app *application) OneMovie(w http.ResponseWriter, r *http.Request) {
+func (app *application) GetMovie(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	movieID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movie, err := app.DB.OneMovie(movieID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	_ = app.writeJSON(w, http.StatusOK, movie)
+
+}
+
+//movie edite
+
+func (app *application) MovieEdit(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	movieID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movie, genres, err := app.DB.OneMovieForEdit(movieID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	var payload = struct {
+		Movie  *models.Movie   `json:"movie"`
+		Genres []*models.Genre `json:"genres"`
+	}{
+		movie,
+		genres,
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, payload)
 
 }
 
