@@ -10,12 +10,13 @@ import (
 	"time"
 )
 
+// สร้างตัวแปรกำหนด port ที่จะใช้
 const port = 8080
 
-// create structs for application config
+// สร้าง application struct สำหรับเก็บ config และ database connection
 type application struct {
-	DSN          string //database connection string
-	Domain       string //domain name
+	DSN          string
+	Domain       string
 	DB           repository.DatabaseRepo
 	auth         Auth
 	JWTSecret    string
@@ -27,30 +28,34 @@ type application struct {
 
 func main() {
 
-	// set application config
+	// Set application config
 	var app application
-	app.Domain = "localhost"
+	app.Domain = "example.com"
 
-	// read form command line args
+	// Read from command line arguments
+	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 dbname=gosampledb user=postgres password=123456 sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
 
-	// set database
-	dsn := flag.String("dsn", "host=localhost user=postgres dbname=gosampledb password=123456 port=5432 sslmode=disable timezone=UTC connect_timeout=5", "database connection string")
+	// Parse the command line arguments for JWT
+	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
+	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
+	flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")
+	flag.StringVar(&app.CookieDomain, "cookie-domain", "localhost", "cookie domain")
+	flag.StringVar(&app.Domain, "domain", "example.com", "domain")
+	flag.StringVar(&app.APIKey, "api-key", "b41447e6319d1cd467306735632ba733", "api key")
+
 	flag.Parse()
-	app.DSN = *dsn
-	// connect to database
-	conn, err := app.connectDB()
 
+	// Connect to database
+	conn, err := app.connectToDB()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// connect by interface
+
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 
+	// Close the database connection
 	defer app.DB.Connection().Close()
 
-	// start server
-	// http.HandleFunc("/", Hello)
-	// http.HandleFunc("/about", About)
 	app.auth = Auth{
 		Issuer:        app.JWTIssuer,
 		Audience:      app.JWTAudience,
@@ -62,9 +67,15 @@ func main() {
 		CookieDomain:  app.CookieDomain,
 	}
 
-	err = http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())
+	// http.HandleFunc("/", Hello)
+	// http.HandleFunc("/about", About)
 
+	// Start the server
+	fmt.Println("Starting server on ", app.Domain)
+	log.Printf("Starting server on port %d", port)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }
