@@ -107,12 +107,8 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// 	check password against hash  (ตรวจสอบรหัสผ่าน)
 
-	password, err := user.PasswordMatches(requestPayload.Password)
-	if err != nil {
-		app.errorJSON(w, errors.New("invalid password"), http.StatusBadRequest)
-		return
-	}
-	if !password {
+	valid, err := user.PasswordMatches(requestPayload.Password)
+	if err != nil || !valid {
 		app.errorJSON(w, errors.New("invalid password"), http.StatusBadRequest)
 		return
 	}
@@ -120,16 +116,16 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// create a jwt user (สร้าง jwt user)
 
 	u := jwtUser{
-		ID:        1,
-		FirstName: "john",
-		LastName:  "doe",
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
 	//generate a token (สร้างโทเคน)
 	tokens, err := app.auth.GenerateTokenPair(&u)
 	if err != nil {
-		_ = app.errorJSON(w, err)
+		app.errorJSON(w, err)
 		return
 	}
-
-	_ = app.writeJSON(w, http.StatusOK, tokens)
+	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
+	http.SetCookie(w, refreshCookie)
 }

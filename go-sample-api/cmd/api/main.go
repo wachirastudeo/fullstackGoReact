@@ -62,8 +62,6 @@ func main() {
 		CookieDomain:  app.CookieDomain,
 	}
 
-	log.Printf("Starting server on port %d", port)
-
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", app.Domain, port), app.routes())
 
 	if err != nil {
