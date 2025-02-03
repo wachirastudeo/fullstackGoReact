@@ -26,7 +26,7 @@ func (app *application) routes() http.Handler {
 	//group admin
 	r.Route("/admin", func(r chi.Router) {
 		r.Use(app.authRequired)
-		r.Get("/movie/{id}", app.MovieEdit)
+		r.Get("/movie/{id}", app.MovieForEdit)
 
 	})
 
