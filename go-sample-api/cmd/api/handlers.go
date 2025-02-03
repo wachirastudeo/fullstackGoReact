@@ -249,6 +249,71 @@ func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// update movie
+func (app *application) UpdateMovie(w http.ResponseWriter, r *http.Request) {
+	var payload models.Movie
+
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movie, err := app.DB.OneMovie(payload.ID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movie.Title = payload.Title
+	movie.ReleaseDate = payload.ReleaseDate
+	movie.Description = payload.Description
+	movie.MPAARating = payload.MPAARating
+	movie.Runtime = payload.Runtime
+	movie.UpdatedAt = time.Now()
+
+	err = app.DB.UpdateMovie(*movie)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	err = app.DB.UpdateMovieGenres(movie.ID, payload.GenresArray)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "movie updated",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, resp)
+}
+
+//delete movie
+
+func (app *application) DeleteMovie(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.DeleteMovie(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "movie deleted",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, resp)
+}
+
 // authenticate
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	//read json payload (อ่านข้อมูลจาก json ที่ส่งมา)
@@ -294,29 +359,6 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
 	app.writeJSON(w, http.StatusOK, tokens)
-}
-
-//delete movie
-
-func (app *application) DeleteMovie(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	err = app.DB.DeleteMovie(id)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	resp := JSONResponse{
-		Error:   false,
-		Message: "movie deleted",
-	}
-
-	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
 // ฟังก์ชันสำหรับการ Refresh Token
