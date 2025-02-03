@@ -16,17 +16,27 @@ func (app *application) routes() http.Handler {
 	//register routes
 	r.Get("/", app.Home)
 	r.Get("/about", app.About)
-	r.Get("/allmovie", app.AllMovie)
+
 	r.Get("/allmoviedemo", app.AllMoviedemo)
+	// auth routes
 	r.Post("/authenticate", app.authenticate)
 	r.Get("/refresh", app.refreshToken)
 	r.Get("/logout", app.logout)
-	r.Get("/movie/{id}", app.GetMovie)
+	// movie routes
+	r.Get("/movies", app.AllMovies)
+	r.Get("/movies/{id}", app.GetMovie)
+	r.Get("/genres", app.AllGenres)
 
 	//group admin
 	r.Route("/admin", func(r chi.Router) {
+		// protected routes
 		r.Use(app.authRequired)
-		r.Get("/movie/{id}", app.MovieForEdit)
+
+		r.Get("/movies", app.MovieCatalog)
+		r.Get("/movies/{id}", app.MovieForEdit)
+		r.Post("/movies", app.InsertMovie)
+		r.Put("/movies/{id}", app.UpdateMovie)
+		r.Delete("/movies/{id}", app.DeleteMovie)
 
 	})
 

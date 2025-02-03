@@ -40,7 +40,7 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 
 }
-func (app *application) AllMovie(w http.ResponseWriter, r *http.Request) {
+func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 	movie, err := app.DB.AllMovies()
 	if err != nil {
 		_ = app.errorJSON(w, err)
