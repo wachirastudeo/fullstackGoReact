@@ -16,6 +16,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// Home ฟังก์ชันสำหรับตรวจสอบสถานะการทำงานของ API
+// @Summary ตรวจสอบสถานะการทำงานของ API
+// @Description แสดงสถานะและข้อมูลเกี่ยวกับ API
+// @Tags Home
+// @Produce json
+// @Success 200 {object} map[string]interface{} "{"status":"active","message":"Go Movies up and running","version":"1.0.0"}"
+// @Router /api/v1/ [get]
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Fprint(w, "Hello World from ", app.Domain)
@@ -40,6 +47,15 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 
 }
+
+// AllMovies แสดงรายชื่อหนังทั้งหมด
+// @Summary แสดงรายชื่อหนังทั้งหมด
+// @Description ดึงข้อมูลหนังทั้งหมดจาก database
+// @Tags Movies
+// @Produce json
+// @Success 200 {array} map[string]interface{} "List of all movies" example([{"id":1,"title":"Movie Title","release_date":"2024-08-28","mpaa_rating":"PG","run_time":120,"description":"Description of the movie"}])
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/movies [get]
 func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 	movie, err := app.DB.AllMovies()
 	if err != nil {
@@ -92,6 +108,17 @@ func (app *application) AllMoviedemo(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 
 }
+
+// GetMovie แสดงรายละเอียดของหนังตาม ID
+// @Summary แสดงรายละเอียดของหนังตาม ID
+// @Description ดึงข้อมูลหนังตาม ID ที่กำหนด
+// @Tags Movies
+// @Produce json
+// @Param id path int true "Movie ID"
+// @Success 200 {object} map[string]interface{} "Movie details" example({"id":1,"title":"Movie Title","release_date":"2024-08-28","mpaa_rating":"PG","run_time":120,"description":"Description of the movie"})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error":"Invalid ID"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/movies/{id} [get]
 func (app *application) GetMovie(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	movieID, err := strconv.Atoi(id)
@@ -109,8 +136,17 @@ func (app *application) GetMovie(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//movie edite
-
+// MovieForEdit ดึงข้อมูลหนังและประเภทหนังสำหรับการแก้ไข
+// @Summary ดึงข้อมูลหนังและประเภทหนังสำหรับการแก้ไข
+// @Description ดึงข้อมูลหนังและประเภทหนังสำหรับการแก้ไขตาม ID
+// @Tags Movies
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Movie ID"
+// @Success 200 {object} map[string]interface{} "Movie and genres details" example({"movie":{"id":1,"title":"Movie Title"},"genres":[{"id":1,"name":"Genre Name"}]})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error":"Invalid ID"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/admin/movies/{id} [get]
 func (app *application) MovieForEdit(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
@@ -138,7 +174,15 @@ func (app *application) MovieForEdit(w http.ResponseWriter, r *http.Request) {
 }
 
 // movie list catalog
-
+// MovieCatalog แสดงรายชื่อหนังในแคตตาล็อก
+// @Summary แสดงรายชื่อหนังในแคตตาล็อก
+// @Description ดึงข้อมูลหนังทั้งหมดจากแคตตาล็อก
+// @Tags Movies
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} map[string]interface{} "List of movies in catalog" example([{"id":1,"title":"Catalog Movie Title","release_date":"2024-08-28","mpaa_rating":"PG","run_time":90,"description":"Description of the catalog movie"}])
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/admin/movies [get]
 func (app *application) MovieCatalog(w http.ResponseWriter, r *http.Request) {
 	movies, err := app.DB.AllMovies()
 	if err != nil {
@@ -150,7 +194,14 @@ func (app *application) MovieCatalog(w http.ResponseWriter, r *http.Request) {
 }
 
 // all genres
-
+// AllGenres แสดงประเภทหนังทั้งหมด
+// @Summary แสดงประเภทหนังทั้งหมด
+// @Description ดึงข้อมูลประเภทหนังทั้งหมด
+// @Tags Genres
+// @Produce json
+// @Success 200 {array} map[string]interface{} "List of all genres" example([{"id":1,"name":"Action"},{"id":2,"name":"Drama"}])
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/genres [get]
 func (app *application) AllGenres(w http.ResponseWriter, r *http.Request) {
 
 	genres, err := app.DB.AllGenres()
@@ -211,7 +262,18 @@ func (app *application) getPoster(movie models.Movie) models.Movie {
 }
 
 // insert movie
-
+// InsertMovie เพิ่มหนังใหม่
+// @Summary เพิ่มหนังใหม่
+// @Description เพิ่มหนังใหม่ไปยังฐานข้อมูล
+// @Tags Movies
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param movie body object true "Movie data" example({"title":"New Movie","release_date":"2024-08-28","mpaa_rating":"PG","run_time":120,"description":"New movie description"})
+// @Success 202 {object} map[string]interface{} "Movie created" example({"message":"movie updated"})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error":"Invalid data"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/admin/movies [post]
 func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 	var movie models.Movie
 
@@ -250,6 +312,18 @@ func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 // update movie
+// UpdateMovie แก้ไขข้อมูลหนัง
+// @Summary แก้ไขข้อมูลหนัง
+// @Description แก้ไขข้อมูลหนังตาม ID ที่กำหนด
+// @Tags Movies
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param movie body object true "Updated movie data" example({"id":1,"title":"Updated Movie Title","release_date":"2024-08-28","mpaa_rating":"PG","run_time":130,"description":"Updated movie description"})
+// @Success 202 {object} map[string]interface{} "Movie updated" example({"message":"movie updated"})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error":"Invalid data"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/admin/movies/{id} [put]
 func (app *application) UpdateMovie(w http.ResponseWriter, r *http.Request) {
 	var payload models.Movie
 
@@ -291,8 +365,18 @@ func (app *application) UpdateMovie(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
-//delete movie
-
+// delete movie
+// DeleteMovie ลบหนังตาม ID
+// @Summary ลบหนังตาม ID
+// @Description ลบข้อมูลหนังตาม ID ที่กำหนด
+// @Tags Movies
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Movie ID"
+// @Success 202 {object} map[string]interface{} "Movie deleted" example({"message":"movie deleted"})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error":"Invalid ID"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error":"Internal Server Error"})
+// @Router /api/v1/admin/movies/{id} [delete]
 func (app *application) DeleteMovie(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
