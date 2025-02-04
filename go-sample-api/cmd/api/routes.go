@@ -1,10 +1,13 @@
 package main
 
 import (
+	_ "backend/cmd/api/docs" // เปลี่ยนชื่อไฟล์ให้ตรงกับ go.mod
+
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func (app *application) routes() http.Handler {
@@ -13,6 +16,10 @@ func (app *application) routes() http.Handler {
 	// middleware
 	r.Use(middleware.Recoverer)
 	r.Use(app.enableCORS)
+
+	// swagger register
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
+
 	//register routes
 	r.Get("/", app.Home)
 	r.Get("/about", app.About)
