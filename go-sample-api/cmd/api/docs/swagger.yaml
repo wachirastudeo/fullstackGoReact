@@ -241,6 +241,28 @@ paths:
       summary: แสดงประเภทหนังทั้งหมด
       tags:
       - Genres
+  /api/v1/logout:
+    get:
+      description: ลบโทเคนรีเฟรชของผู้ใช้ออกจากระบบ
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: 'Accepted" example({"message": "Accepted"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'Internal Server Error" example({"error": "Internal Server
+            Error"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: ออกจากระบบ
+      tags:
+      - Authentication
   /api/v1/movies:
     get:
       description: ดึงข้อมูลหนังทั้งหมดจาก database
@@ -294,6 +316,35 @@ paths:
       summary: แสดงรายละเอียดของหนังตาม ID
       tags:
       - Movies
+  /api/v1/refresh:
+    get:
+      description: ตรวจสอบโทเคนที่หมดอายุและสร้างโทเคนใหม่สำหรับผู้ใช้
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Token pairs" example({"access_token": "string", "refresh_token":
+            "string"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'Unauthorized" example({"error": "Unauthorized"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'Internal Server Error" example({"error": "Internal Server
+            Error"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: รีเฟรชโทเคน JWT
+      tags:
+      - Authentication
 securityDefinitions:
   BearerAuth:
     in: header

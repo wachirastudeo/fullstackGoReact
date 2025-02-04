@@ -355,6 +355,38 @@
                 }
             }
         },
+        "/api/v1/logout": {
+            "get": {
+                "description": "ลบโทเคนรีเฟรชของผู้ใช้ออกจากระบบ",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "ออกจากระบบ",
+                "responses": {
+                    "202": {
+                        "description": "Accepted\" example({\"message\": \"Accepted\"})",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error\" example({\"error\": \"Internal Server Error\"})",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/movies": {
             "get": {
                 "description": "ดึงข้อมูลหนังทั้งหมดจาก database",
@@ -425,6 +457,47 @@
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/refresh": {
+            "get": {
+                "description": "ตรวจสอบโทเคนที่หมดอายุและสร้างโทเคนใหม่สำหรับผู้ใช้",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "รีเฟรชโทเคน JWT",
+                "responses": {
+                    "200": {
+                        "description": "Token pairs\" example({\"access_token\": \"string\", \"refresh_token\": \"string\"})",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized\" example({\"error\": \"Unauthorized\"})",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error\" example({\"error\": \"Internal Server Error\"})",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }

@@ -1,8 +1,7 @@
 package main
 
 import (
-	_ "backend/cmd/api/docs" // เปลี่ยนชื่อไฟล์ให้ตรงกับ go.mod
-
+	_ "backend/cmd/api/docs" // เปลี่ยนชื่อโมดูลให้ตรงกับชื่อใน go.mod
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -11,7 +10,7 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	//create router
+
 	// Create a router mux
 	mux := chi.NewRouter()
 
@@ -27,21 +26,28 @@ func (app *application) routes() http.Handler {
 		// Public routes
 		r.Get("/", app.Home)
 		r.Get("/about", app.About)
-		r.Get("/allmoviedemo", app.AllMoviedemo)
+		r.Get("/demomovies", app.AllDemoMovies)
 
-		// auth routes
+		// Authenticated routes
 		r.Post("/authenticate", app.authenticate)
 		r.Get("/refresh", app.refreshToken)
 		r.Get("/logout", app.logout)
 
-		// movie routes
+		// Protected routes
+		r.With(app.jwtMiddleware).Get("/admin/movies", app.MovieCatalog)
+		r.With(app.jwtMiddleware).Get("/admin/movies/{id}", app.MovieForEdit)
+		r.With(app.jwtMiddleware).Post("/admin/movies", app.InsertMovie)
+		r.With(app.jwtMiddleware).Put("/admin/movies/{id}", app.UpdateMovie)
+		r.With(app.jwtMiddleware).Delete("/admin/movies/{id}", app.DeleteMovie)
+
 		r.Get("/movies", app.AllMovies)
 		r.Get("/movies/{id}", app.GetMovie)
 		r.Get("/genres", app.AllGenres)
 
-		//group admin
+		// Admin routes
 		r.Route("/admin", func(r chi.Router) {
-			// protected routes
+
+			// Protected routes
 			r.Use(app.authRequired)
 
 			r.Get("/movies", app.MovieCatalog)
@@ -49,9 +55,7 @@ func (app *application) routes() http.Handler {
 			r.Post("/movies", app.InsertMovie)
 			r.Put("/movies/{id}", app.UpdateMovie)
 			r.Delete("/movies/{id}", app.DeleteMovie)
-
 		})
-
 	})
 
 	return mux

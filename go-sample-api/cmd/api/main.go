@@ -29,8 +29,6 @@ type application struct {
 	APIKey       string
 }
 
-//swagger
-
 // @title Movies API with GO and PostgreSQL
 // @version 1.0
 // @description This is a Movies API with GO and PostgreSQL
@@ -49,7 +47,6 @@ type application struct {
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-
 func main() {
 
 	// Set application config
@@ -58,12 +55,10 @@ func main() {
 
 	// โหลดค่าจากไฟล์ .env
 	err := godotenv.Load()
-
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	// สร้าง DSN สำหรับเชื่อมต่อฐานข้อมูล
 	// สร้าง DSN สำหรับเชื่อมต่อฐานข้อมูล
 	dsn := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s timezone=%s connect_timeout=%s",
 		os.Getenv("DB_HOST"),
@@ -90,6 +85,7 @@ func main() {
 	app.Domain = os.Getenv("DOMAIN")
 	app.APIKey = os.Getenv("API_KEY")
 
+	// Parse the command line arguments for JWT
 	// flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	// flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
 	// flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")
