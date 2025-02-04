@@ -29,6 +29,8 @@ type application struct {
 	APIKey       string
 }
 
+//swagger
+
 // @title Movies API with GO and PostgreSQL
 // @version 1.0
 // @description This is a Movies API with GO and PostgreSQL

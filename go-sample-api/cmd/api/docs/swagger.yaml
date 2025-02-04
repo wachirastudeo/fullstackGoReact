@@ -1,0 +1,57 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a Movies API with GO and PostgreSQL
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Movies API with GO and PostgreSQL
+  version: "1.0"
+paths:
+  /api/v1/authenticate:
+    post:
+      consumes:
+      - application/json
+      description: รับข้อมูลอีเมลและรหัสผ่านของผู้ใช้และตรวจสอบความถูกต้อง หลังจากนั้นสร้าง
+        JWT TokenPairs
+      parameters:
+      - description: User credentials
+        in: body
+        name: requestPayload
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: 'Token pairs" example({"access_token": "string", "refresh_token":
+            "string"})'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 'Bad Request" example({"error": "Bad Request"})'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 'Internal Server Error" example({"error": "Internal Server
+            Error"})'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Authentication และสร้าง TokenPairs
+      tags:
+      - Authentication
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

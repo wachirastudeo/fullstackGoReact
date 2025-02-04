@@ -314,7 +314,17 @@ func (app *application) DeleteMovie(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
-// authenticate
+// authenticate ทำการ Authentication และสร้าง TokenPairs
+// @Summary Authentication และสร้าง TokenPairs
+// @Description รับข้อมูลอีเมลและรหัสผ่านของผู้ใช้และตรวจสอบความถูกต้อง หลังจากนั้นสร้าง JWT TokenPairs
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param requestPayload body object true "User credentials" example({"email": "string", "password": "string"})
+// @Success 202 {object} map[string]interface{} "Token pairs" example({"access_token": "string", "refresh_token": "string"})
+// @Failure 400 {object} map[string]interface{} "Bad Request" example({"error": "Bad Request"})
+// @Failure 500 {object} map[string]interface{} "Internal Server Error" example({"error": "Internal Server Error"})
+// @Router /api/v1/authenticate [post]
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	//read json payload (อ่านข้อมูลจาก json ที่ส่งมา)
 	var requestPayload struct {
