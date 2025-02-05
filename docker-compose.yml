@@ -1,0 +1,25 @@
+# network container
+networks:
+  goapi_network:
+    driver: bridge
+#
+services:
+  # Database postgres db
+  pgdb:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: gosampledb
+    volumes:
+      - ./postgresdb:/var/lib/postgresql/data
+      #  run sql database in folder initdb to container
+      - ./initdb:/docker-entrypoint-initdb.d
+    ports:
+      - "6432:5432"
+    restart: always
+    networks:
+      - goapi_network
+
+
