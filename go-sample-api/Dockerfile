@@ -1,4 +1,4 @@
-#base image golang 1.23
+#base image golang 1.23.5
 FROM golang:1.23.5
 #set current working directory inside container
 WORKDIR /app
@@ -15,6 +15,6 @@ RUN go build -o main ./cmd/api
 #expose port  to the outside
 EXPOSE 8080
 #make the executable file
-RUN chamod +x main
+RUN chmod +x main
 #command to run 
 CMD ["./main"]
